@@ -1,0 +1,20 @@
+import cv2
+import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),"..")))
+
+from python.dataset_loader.astyx_loader import AstyxLoader
+from python.fusion.radar_camera_projection import project_radar_to_image,draw_radar_on_image
+
+loader = AstyxLoader("F:\\radar_dataset_astyx\\dataset_astyx_hires2019")
+
+img, radar, calib = loader.get_sample(0)
+
+pixels = project_radar_to_image(radar["xyz"], calib, img)
+
+overlay = draw_radar_on_image(img, pixels)
+
+cv2.imshow("radar camera fusion", overlay)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
