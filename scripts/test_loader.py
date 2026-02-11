@@ -12,7 +12,3 @@ img, radar, calib = loader.get_sample(0)
 print("Image", img.shape)
 print("Radar objects", len(radar["xyz"]))
 print("Calibration keys:", calib.keys())
-
-import json
-from pprint import pprint
-pprint(calib)
