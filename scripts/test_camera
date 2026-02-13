@@ -1,0 +1,30 @@
+import cv2
+import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),"..")))
+
+from python.dataset_loader.astyx_loader import AstyxLoader
+from python.fusion.radar_camera_projection import project_radar_to_image
+from python.camera_detection.camera_tracking import CameraDetector
+from python.visualization.draw_2d import draw_camera_detections
+
+loader = AstyxLoader("F:\\radar_dataset_astyx\\dataset_astyx_hires2019")
+
+for i in range(0,150):
+    img, radar, calib = loader.get_sample(i)
+
+    camera_object_detector = CameraDetector()
+
+    camera_detections = camera_object_detector.detect(img)
+
+    if camera_detections is not None:
+        print("camera detections:", len(camera_detections))
+        vis = draw_camera_detections(img,camera_detections)
+        cv2.imshow("radar camera fusion", vis)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+    else:
+        print("no camera detection")
+
+    

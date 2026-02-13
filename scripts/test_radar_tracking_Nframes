@@ -7,13 +7,13 @@ from python.dataset_loader.astyx_loader import AstyxLoader
 from python.radar_processing.clustering import cluster_radar_points
 from python.radar_processing.object_list import build_radar_objects
 from python.fusion.track_manager import RadarTrackManager
-from python.fusion.radar_camera_projection import project_radar_to_image,draw_tracks_on_image
+from python.fusion.radar_camera_projection import project_radar_to_image,draw_tracks_on_image,draw_radar_on_image
 
 loader = AstyxLoader("F:\\radar_dataset_astyx\\dataset_astyx_hires2019")
 
 track_manager = RadarTrackManager()
 
-for i in range (0,5):
+for i in range (30,50):
     img, radar, calib = loader.get_sample(i)
     
     labels = cluster_radar_points(radar["xyz"],eps =1.0, min_samples= 6)
@@ -30,9 +30,24 @@ for i in range (0,5):
     track_points = np.array([t.x[:3] for t in tracks])
 
     #projection of radar track points on camera
+    print("points before projection")
     pixels = project_radar_to_image(track_points,calib,img)
+
+    valid = (
+        (pixels[:,0] >= 0) &
+        (pixels[:,0] < img.shape[1]) & 
+        (pixels[:,1] >= 0) &
+        (pixels[:,1] < img.shape[0]) 
+    )
+    print("valid projected points", valid.sum())
     img = draw_tracks_on_image(img,pixels,tracks)
 
+    cv2.imshow("fusion",img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    raw_radar_pixels =  project_radar_to_image(radar["xyz"],calib,img)
+    img = draw_radar_on_image(img,raw_radar_pixels)
     cv2.imshow("fusion",img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
