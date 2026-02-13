@@ -1,0 +1,38 @@
+import os
+import sys
+import numpy as np
+import cv2
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),"..")))
+from python.dataset_loader.astyx_loader import AstyxLoader
+from python.radar_processing.clustering import cluster_radar_points
+from python.radar_processing.object_list import build_radar_objects
+from python.fusion.track_manager import RadarTrackManager
+from python.fusion.radar_camera_projection import project_radar_to_image,draw_tracks_on_image
+
+loader = AstyxLoader("F:\\radar_dataset_astyx\\dataset_astyx_hires2019")
+
+track_manager = RadarTrackManager()
+
+for i in range (0,5):
+    img, radar, calib = loader.get_sample(i)
+    
+    labels = cluster_radar_points(radar["xyz"],eps =1.0, min_samples= 6)
+    
+    objects = build_radar_objects(radar["xyz"], radar["vr"],labels)
+    
+    print("Radar objects:", len(objects))
+    #print(objects[:3])
+
+    tracks = track_manager.update(objects)
+    print("active tracks:",len(tracks))
+
+    #converting tracks to points for projection on camera
+    track_points = np.array([t.x[:3] for t in tracks])
+
+    #projection of radar track points on camera
+    pixels = project_radar_to_image(track_points,calib,img)
+    img = draw_tracks_on_image(img,pixels,tracks)
+
+    cv2.imshow("fusion",img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()

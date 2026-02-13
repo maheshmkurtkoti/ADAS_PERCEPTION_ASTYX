@@ -45,6 +45,30 @@ def draw_radar_on_image(image, pixels):
             cv2.circle(vis,(u,v), 3, (0,255,0), -1)
     return vis
 
+def draw_tracks_on_image(image, pixels,tracks):
+    h,w =image.shape[:2]
+
+    for (u,v), t in zip(pixels, tracks):
+        u, v = int(u), int(v)
+
+        if 0 <= u < w and 0 <= v < h:
+            #draw circle
+            cv2.circle(image, (u,v), 6, (0, 255, 0), -1)
+
+            #draw track id
+            cv2.putText(
+                image,
+                f"ID:{t.id}",
+                (u+5, v-5),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5,
+                (0,255,0),
+                1
+            )
+
+    return image
+
+    
 
 
     
