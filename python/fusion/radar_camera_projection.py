@@ -13,42 +13,6 @@ def get_camera_intrinsics(calib):
             return np.array(s["calib_data"]["K"])
     raise ValueError("camera_front not found in calibration")
     
-#def project_radar_to_image(radar_xyz, calib, image):
-#    T_r = get_sensor_transform(calib,"radar_6455")
-#    T_c = get_sensor_transform(calib,"camera_front")
-#    K = get_camera_intrinsics(calib)
-#
-#    #radar to camera transforms
-#    T_r2c = T_c @ np.linalg.inv(T_r)
-#
-#    #Homogenous radar coordinates
-#    N = radar_xyz.shape[0]
-#    #radar_h = np.hstack([radar_xyz,np.ones((N,1))]).T #4XN
-#    ##cam_pts = T_r2c @ radar_h
-#    ##cam_pts = cam_pts[:3,:] # 3XN
-#    ###keep only points in front of the camera
-#    ##valid = cam_pts[2, :] > 0.1
-#    ##cam_pts = cam_pts[:, valid]
-#    ###projection
-#    ##pixels = K @ cam_pts
-#    ##pixels /= pixels[2,:]
-#    ##return pixels[:2, :].T.astype(int)
-#
-#    radar_h = np.hstack([radar_xyz,np.ones((N,1))])
-#    cam_pts = (T_r2c @ radar_h.T).T[:,:3]
-#
-#    #fix for astyx data - flip Y axis
-#    cam_pts[:,1] *= -1
-#
-#    #keep only points in front of the camera
-#    valid = cam_pts[:,2] > 0
-#    cam_pts = cam_pts[valid]
-#    #projection
-#    pixels = (K @ cam_pts.T).T
-#    pixels = pixels[:,:2]/pixels[:,2:3]
-#    return pixels
-
-
 def draw_radar_on_image(image, pixels):
     vis = image.copy()
     for u, v in pixels:
@@ -80,13 +44,6 @@ def draw_tracks_on_image(image, pixels,tracks):
     return image
 
 def project_radar_to_image(radar_xyz, calib, image):
-    #axis alignment
-#    radar_xyz_cam = np.zeros_like(radar_xyz)
-#    radar_xyz_cam[:,0] = -radar_xyz[:,1]
-#    radar_xyz_cam[:,1] = -radar_xyz[:,2]
-#    radar_xyz_cam[:,2] =  radar_xyz[:,0]
-
-#    radar_xyz = radar_xyz_cam
 
     T_r = get_sensor_transform(calib,"radar_6455")
     T_c = get_sensor_transform(calib,"camera_front")

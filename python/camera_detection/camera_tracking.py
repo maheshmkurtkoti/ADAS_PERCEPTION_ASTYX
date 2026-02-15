@@ -3,7 +3,7 @@ import numpy as np
 from ultralytics import YOLO
 
 class CameraDetector:
-    def __init__(self, model_name = "yolov8s.pt",conf=0.2):
+    def __init__(self, model_name,conf):
         """
         model_name: yolov8n.pt(fast)/yolov8s.pt)(better)
         conf: confidence threshold
@@ -24,7 +24,7 @@ class CameraDetector:
         image: BGR Immage (cv2)
         returns: list of detections
         """
-        results = self.model(image,verbose =False)[0]
+        results = self.model(image,imgsz=1280,verbose =False)[0]
 
         detections = []
 
@@ -50,7 +50,7 @@ class CameraDetector:
                 "class_name": self.vehicle_classes[cls],
                 "center": [int((x1 + x2)/2), int(( y1 + y2)/2)]})
             
-            return detections
+        return detections
         
 
 
